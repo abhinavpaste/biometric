@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Success from './pages/Success';
 import Results from './pages/Results';
+import AdminLogs from './pages/AdminLogs';
 import { Fingerprint } from 'lucide-react';
 
 function App() {
@@ -18,6 +19,9 @@ function App() {
             <span>Bio<span className="text-gradient">Vote</span></span>
           </Link>
           <div style={{ display: 'flex', gap: '1rem' }}>
+            <Link to="/logs" className="btn btn-outline" style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}>
+              System Logs
+            </Link>
             <Link to="/results" className="btn btn-outline" style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}>
               Live Results
             </Link>
@@ -32,6 +36,7 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/success" element={<Success />} />
             <Route path="/results" element={<Results />} />
+            <Route path="/logs" element={<AdminLogs />} />
           </Routes>
         </main>
       </div>

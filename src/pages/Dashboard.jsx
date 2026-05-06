@@ -7,19 +7,19 @@ const candidates = [
   {
     id: 'c1',
     name: 'Elena Rodriguez',
-    party: 'Progressive Alliance',
+    party: 'PARTY A',
     image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400&h=400'
   },
   {
     id: 'c2',
     name: 'Marcus Chen',
-    party: 'Liberty Coalition',
+    party: 'PARTY B',
     image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400&h=400'
   },
   {
     id: 'c3',
     name: 'Sarah Jenkins',
-    party: 'Green Future',
+    party: 'PARTY C',
     image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400&h=400'
   }
 ];
@@ -42,7 +42,7 @@ function Dashboard() {
 
   const handleVote = () => {
     if (!selectedCandidate || !voterId) return;
-    
+
     setIsCasting(true);
 
     setTimeout(() => {
@@ -61,16 +61,20 @@ function Dashboard() {
 
       // Mark user as voted
       user.hasVoted = true;
+      user.votedAt = new Date().toLocaleString();
       localStorage.setItem('biovote_users', JSON.stringify(existingUsers));
 
       // Record vote (anonymous tally)
       votes[selectedCandidate] = (votes[selectedCandidate] || 0) + 1;
       localStorage.setItem('biovote_tally', JSON.stringify(votes));
 
+      // Generate confirmation code
+      const code = `BV-${new Date().getFullYear()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+
       // Clear session auth
       sessionStorage.removeItem('authenticated_voter');
 
-      navigate('/success');
+      navigate('/success', { state: { confirmationCode: code } });
     }, 1500);
   };
 
@@ -101,11 +105,11 @@ function Dashboard() {
             <img src={c.image} alt={c.name} className="candidate-img" />
             <h3 style={{ fontSize: '1.25rem', marginBottom: '0.25rem' }}>{c.name}</h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '1rem' }}>{c.party}</p>
-            
-            <div style={{ 
-              height: '24px', 
-              width: '24px', 
-              borderRadius: '50%', 
+
+            <div style={{
+              height: '24px',
+              width: '24px',
+              borderRadius: '50%',
               border: `2px solid ${selectedCandidate === c.id ? 'var(--primary)' : 'var(--glass-border)'}`,
               margin: '0 auto',
               display: 'flex',
@@ -120,8 +124,8 @@ function Dashboard() {
       </div>
 
       <div style={{ marginTop: '3rem', textAlign: 'center' }}>
-        <button 
-          className="btn btn-primary" 
+        <button
+          className="btn btn-primary"
           disabled={!selectedCandidate || isCasting}
           onClick={handleVote}
           style={{ padding: '1rem 3rem', fontSize: '1.125rem', minWidth: '250px' }}

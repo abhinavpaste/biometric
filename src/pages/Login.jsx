@@ -8,7 +8,7 @@ function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const [voterId, setVoterId] = useState(location.state?.voterId || '');
-  const [status, setStatus] = useState('initializing'); // initializing, ready, processing, success, error
+  const [status, setStatus] = useState('initializing');
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
@@ -40,6 +40,12 @@ function Login() {
     e.preventDefault();
     if (!voterId.trim()) {
       setErrorMsg('Please enter your Voter ID');
+      return;
+    }
+
+    const voterIdRegex = /^1NT\d{2}[A-Z]{2}\d{3}$/;
+    if (!voterIdRegex.test(voterId)) {
+      setErrorMsg('Invalid Format! ID must be like 1NT23CS007');
       return;
     }
     
@@ -128,7 +134,7 @@ function Login() {
             <input 
               type="text" 
               className="input-field" 
-              placeholder="Enter your registered Voter ID"
+              placeholder="Example: 1NT23CS007"
               value={voterId}
               onChange={(e) => setVoterId(e.target.value)}
               disabled={status === 'processing' || status === 'initializing'}

@@ -1,9 +1,20 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { CheckCircle, BarChart3 } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { CheckCircle, BarChart3, Copy, CheckCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 
 function Success() {
+  const location = useLocation();
+  const confirmationCode = location.state?.confirmationCode || 'N/A';
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(confirmationCode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <div className="glass-card" style={{ maxWidth: '600px', width: '100%', margin: '0 auto', textAlign: 'center', padding: '4rem 2rem' }}>
       <motion.div
@@ -21,13 +32,24 @@ function Success() {
         transition={{ delay: 0.3 }}
       >
         <h2 style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>Vote Cast Successfully!</h2>
-        <p style={{ color: 'var(--text-muted)', fontSize: '1.125rem', marginBottom: '2.5rem', lineHeight: 1.6 }}>
-          Your vote has been securely recorded on the immutable ledger. Thank you for participating in this democratic process.
+        <p style={{ color: 'var(--text-muted)', fontSize: '1.125rem', marginBottom: '2rem', lineHeight: 1.6 }}>
+          Your vote has been securely recorded. Thank you for participating in this democratic process.
         </p>
-        
-        <div style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)', border: '1px dashed var(--glass-border)', borderRadius: '12px', marginBottom: '3rem', fontFamily: 'monospace', color: 'var(--text-muted)' }}>
-          Transaction Hash:<br/>
-          <span style={{ color: 'var(--primary)' }}>0x{Math.random().toString(16).slice(2, 10)}...{Math.random().toString(16).slice(2, 10)}</span>
+
+        <div style={{ padding: '1.5rem', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.3)', borderRadius: '12px', marginBottom: '2rem' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '0.75rem' }}>Your Vote Receipt Code</p>
+          <p style={{ fontFamily: 'monospace', fontSize: '1.5rem', fontWeight: 700, color: 'var(--primary)', letterSpacing: '0.1em', marginBottom: '0.75rem' }}>
+            {confirmationCode}
+          </p>
+          <button
+            onClick={handleCopy}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.3)', color: copied ? 'var(--success)' : 'var(--primary)', padding: '0.4rem 0.9rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600 }}
+          >
+            {copied ? <><CheckCheck size={14} /> Copied!</> : <><Copy size={14} /> Copy Code</>}
+          </button>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: '0.75rem' }}>
+            Save this code to verify your vote was counted. It does not reveal your choice.
+          </p>
         </div>
 
         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>

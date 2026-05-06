@@ -4,9 +4,9 @@ import { BarChart3, Home } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const candidates = [
-  { id: 'c1', name: 'Elena Rodriguez', party: 'Progressive Alliance', color: 'var(--primary)' },
-  { id: 'c2', name: 'Marcus Chen', party: 'Liberty Coalition', color: 'var(--secondary)' },
-  { id: 'c3', name: 'Sarah Jenkins', party: 'Green Future', color: 'var(--success)' }
+  { id: 'c1', name: 'Elena Rodriguez', party: 'PARTY A', color: 'var(--primary)' },
+  { id: 'c2', name: 'Marcus Chen', party: 'PARTY B', color: 'var(--secondary)' },
+  { id: 'c3', name: 'Sarah Jenkins', party: 'PARTY C', color: 'var(--success)' }
 ];
 
 function Results() {

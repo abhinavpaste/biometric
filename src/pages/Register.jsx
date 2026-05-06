@@ -1,13 +1,14 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Camera, ShieldCheck, AlertCircle } from 'lucide-react';
-import { getFaceDescriptor, loadModels } from '../utils/faceUtils';
+import { getFaceDescriptor, loadModels, compareFaces } from '../utils/faceUtils';
 
 function Register() {
   const videoRef = useRef(null);
   const navigate = useNavigate();
   const [voterId, setVoterId] = useState('');
-  const [status, setStatus] = useState('initializing'); // initializing, ready, capturing, processing, success, error
+  const [name, setName] = useState('');
+  const [status, setStatus] = useState('initializing');
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
@@ -41,6 +42,17 @@ function Register() {
       setErrorMsg('Please enter a valid Voter ID');
       return;
     }
+
+    if (!name.trim()) {
+      setErrorMsg('Please enter your full name');
+      return;
+    }
+
+    const voterIdRegex = /^1NT\d{2}[A-Z]{2}\d{3}$/;
+    if (!voterIdRegex.test(voterId)) {
+      setErrorMsg('Invalid Format! ID must be like 1NT23CS007 (1NT + Year + Dept + Roll No)');
+      return;
+    }
     
     setStatus('processing');
     setErrorMsg('');
@@ -62,9 +74,29 @@ function Register() {
         return;
       }
 
+      // Check if face is already registered by someone else
+      let faceAlreadyRegistered = false;
+      for (const key in existingUsers) {
+        const user = existingUsers[key];
+        if (user.faceDescriptor) {
+          const distance = compareFaces(descriptor, user.faceDescriptor);
+          if (distance < 0.6) { // 0.6 is the typical threshold for a match in face-api
+            faceAlreadyRegistered = true;
+            break;
+          }
+        }
+      }
+
+      if (faceAlreadyRegistered) {
+        setStatus('ready');
+        setErrorMsg('User already registered with this face.');
+        return;
+      }
+
       // Save user
       existingUsers[voterId] = {
         voterId,
+        name: name.trim(),
         faceDescriptor: Array.from(descriptor),
         hasVoted: false
       };
@@ -108,11 +140,23 @@ function Register() {
       ) : (
         <form onSubmit={handleRegister}>
           <div className="input-group">
+            <label className="input-label">Full Name</label>
+            <input
+              type="text"
+              className="input-field"
+              placeholder="Enter your full name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              disabled={status === 'processing' || status === 'initializing'}
+            />
+          </div>
+
+          <div className="input-group">
             <label className="input-label">Voter ID</label>
             <input 
               type="text" 
               className="input-field" 
-              placeholder="Enter your unique Voter ID"
+              placeholder="Example: 1NT23CS007"
               value={voterId}
               onChange={(e) => setVoterId(e.target.value)}
               disabled={status === 'processing' || status === 'initializing'}
